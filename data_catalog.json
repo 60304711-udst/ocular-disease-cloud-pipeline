@@ -1,0 +1,19 @@
+{
+  "dataset_name": "Ocular Disease Recognition (ODIR-5K)",
+  "source": "Kaggle",
+  "storage_location": "Azure Blob Storage (Qatar Central)",
+  "zones": {
+    "raw_zone": "raw-data container (Immutable original zip file)",
+    "processed_zone": "processed-data container (CLAHE enhanced images)"
+  },
+  "schema": {
+    "Patient_ID": "Integer (PII - Stripped to protect privacy)",
+    "Patient_Age": "Integer",
+    "Patient_Sex": "Categorical (Male/Female)",
+    "Left_Fundus": "Image (Unstructured, JPG)",
+    "Right_Fundus": "Image (Unstructured, JPG)",
+    "Labels": "Multi-label Binary (Normal, Diabetes, Glaucoma, Cataract, AMD, Hypertension, Myopia, Other)"
+  },
+  "lineage": "Kaggle -> Local Temp -> Azure Raw Blob -> Python ETL (CLAHE) -> Azure Processed Blob",
+  "assumptions": "Images are of variable resolution and require resizing. PII is minimal but must be governed."
+}
