@@ -6,10 +6,10 @@ from azure.storage.blob import BlobServiceClient
 from tqdm import tqdm
 
 # --- CONFIGURATION ---
-AZURE_CONNECTION_STRING = "put key here"
+AZURE_CONNECTION_STRING = "connetction string here"
+PROCESSED_CONTAINER = "processed-data"
 LOCAL_ZIP_PATH = "./dataset_temp/ocular_dataset.zip"
 EXTRACT_PATH = "./dataset_temp/extracted"
-LIMIT = 50 # Processing a 50-image batch to meet the time deadline and prove pipeline functionality!
 
 def apply_clahe(image_path):
     # 1. Read image in grayscale
@@ -26,22 +26,21 @@ def apply_clahe(image_path):
     return cl_img
 
 def main():
-    print("Step 1: Extracting a safe batch of images from the local zip...")
+    print("Step 1: Extracting ALL images from the local zip...")
     os.makedirs(EXTRACT_PATH, exist_ok=True)
     
     with zipfile.ZipFile(LOCAL_ZIP_PATH, 'r') as zip_ref:
-        # Find just the image files
+        # Find all the image files
         image_files = [f for f in zip_ref.namelist() if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-        batch_files = image_files[:LIMIT]
-        zip_ref.extractall(EXTRACT_PATH, members=batch_files)
+        zip_ref.extractall(EXTRACT_PATH, members=image_files)
 
     print("\nStep 2: Connecting to Azure 'processed-data' container...")
     blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
     container_client = blob_service_client.get_container_client(PROCESSED_CONTAINER)
 
-    print(f"\nStep 3: Applying CLAHE extraction and uploading {LIMIT} features to Azure...")
+    print(f"\nStep 3: Applying CLAHE extraction and uploading {len(image_files)} features to Azure...")
     # tqdm gives us a nice progress bar in the terminal!
-    for file_name in tqdm(batch_files):
+    for file_name in tqdm(image_files):
         local_file_path = os.path.join(EXTRACT_PATH, file_name)
         
         # Apply our ETL and Feature Extraction
@@ -60,7 +59,7 @@ def main():
         with open(temp_save_path, "rb") as data:
             blob_client.upload_blob(data, overwrite=True)
 
-    print("\nSUCCESS! Phase 1 ETL and Feature Extraction (Deliverables II.2, II.4, II.5) are complete.")
+    print("\nSUCCESS! Full Dataset ETL and Feature Extraction is complete.")
 
 if __name__ == "__main__":
     main()
