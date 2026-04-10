@@ -1,0 +1,32 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+code: .
+command: >-
+  python train.py 
+  --data_dir ${{inputs.ocular_data}} 
+  --epochs 10
+inputs:
+  ocular_data:
+    type: uri_folder
+    path: azureml://datastores/ocular_processed_datastore/paths/
+environment:
+  image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04
+  conda_file:
+    name: ocular-pytorch-env
+    channels:
+      - conda-forge
+      - pytorch
+    # ... (rest of job.yml stays same)
+    dependencies:
+      - python=3.8
+      - pytorch
+      - torchvision
+      - cpuonly
+      - libtiff
+      - pandas     
+      - pip
+      - pip:
+          - mlflow
+          - azureml-mlflow
+
+compute: azureml:resnet-cluster
+experiment_name: ocular-disease-training

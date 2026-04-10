@@ -1,0 +1,6 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: blue
+endpoint_name: ocular-disease-endpoint
+model: azureml:ResNet50_Ocular@latest
+instance_type: Standard_DS3_v2
+instance_count: 1
