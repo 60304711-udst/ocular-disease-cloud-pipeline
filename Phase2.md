@@ -2,7 +2,7 @@
 **Author:** Mohammad Shurbaji  
 **Student ID:** 60304711  
 **Course:** CCIT-DSAI3202 | University of Doha for Science and Technology  
-**Phase:** 2 & 3 (Model Training, MLOps, and Live Deployment)
+**Phase:** 2  (Model Training, MLOps, and Live Deployment)
 
 ---
 
@@ -53,10 +53,10 @@ Training Accuracy Graph <img width="782" height="520" alt="image" src="https://g
 
 *The model shows a steady learning curve reaching 74%, indicating a robust feature extraction from the CLAHE-enhanced fundus images.*
 
-### Live Inference Test
+### Live Deployment & Environment Provisioning
 <img width="959" height="443" alt="image" src="https://github.com/user-attachments/assets/ef4cbb36-d896-4715-b3cb-c1aead146b9e" />
 
-*The live endpoint successfully receives image tensors and returns structured JSON predictions, identifying disease classes in real-time.*
+*The custom inference environment (victory-env-final:2) was successfully built and provisioned. This confirms the resolution of the PyTorch post101 dependency conflict and the successful containerization of the ResNet50 model for cloud-native deployment.*
 
 ---
 
