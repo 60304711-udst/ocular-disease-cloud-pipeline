@@ -1,0 +1,12 @@
+name: model-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy=1.26.4
+  - pip:
+      - mlflow
+      - torch==2.4.0
+      - torchvision==0.19.0
+      - pillow
+      - azureml-inference-server-http

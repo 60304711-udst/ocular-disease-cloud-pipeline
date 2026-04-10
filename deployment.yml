@@ -1,6 +1,17 @@
 $schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
-name: blue
+name: victory-final-try
 endpoint_name: ocular-disease-endpoint
-model: azureml:ResNet50_Ocular@latest
+model: azureml:ResNet50_Ocular:1
+environment: azureml:victory-env-final:2
 instance_type: Standard_DS3_v2
 instance_count: 1
+environment_variables:
+  MLFLOW_MODEL_FOLDER: "model"
+liveness_probe:
+  initial_delay: 600
+  period: 10
+  timeout: 2
+readiness_probe:
+  initial_delay: 600
+  period: 10
+  timeout: 2
