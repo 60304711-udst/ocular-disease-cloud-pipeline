@@ -50,15 +50,20 @@ class ODIRDataset(Dataset):
         try:
             image = Image.open(img_path).convert('RGB')
         except Exception as e:
-            print(f"ERROR loading {img_path}: {e}")
-            # Skip missing/corrupted images by loading the next one
-            return self.__getitem__((idx + 1) % len(self))
+            # STOP the loop and print the exact path it tried to find
+            print(f"CRITICAL ERROR: Cannot find image at {img_path}")
+            print(f"System Error: {e}")
+            raise e # Crash immediately so we can read the log
 
         if self.transform:
             image = self.transform(image)
         return image, sample['label']
 
 def main(args):
+    print(f"DEBUG: Azure mounted the data at: {args.data_dir}")
+    print("DEBUG: Let's look inside that folder...")
+    print(os.listdir(args.data_dir)[:20])
+    
     mlflow.autolog()
     
     transform = transforms.Compose([
