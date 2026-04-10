@@ -14,31 +14,39 @@ torch.manual_seed(42)
 
 class ODIRDataset(Dataset):
     def __init__(self, excel_path, data_dir, transform=None):
-        # We named the variable excel_path, but it reads the CSV perfectly
         df = pd.read_csv(excel_path)
         self.data_dir = data_dir
         self.transform = transform
         
-        # ODIR-5K Columns: N, D, G, C, A, H, M, O
         self.classes = ['Normal', 'Diabetes', 'Glaucoma', 'Cataract', 'AMD', 'Hypertension', 'Myopia', 'Others']
         
+        # 1. Look inside the Azure folder and get a list of what's ACTUALLY there
+        try:
+            existing_files = set(os.listdir(data_dir))
+            print(f"DEBUG: Successfully found {len(existing_files)} files in the Azure container.")
+        except Exception as e:
+            print(f"CRITICAL: Could not read Azure directory. Error: {e}")
+            existing_files = set()
+
         self.samples = []
+        # 2. Only add the image to our training list if it physically exists in the cloud
         for _, row in df.iterrows():
-            # Check Left Eye
-            self.samples.append({
-                'img': row['Left-Fundus'],
-                'label': self._get_label(row)
-            })
-            # Check Right Eye
-            self.samples.append({
-                'img': row['Right-Fundus'],
-                'label': self._get_label(row)
-            })
+            if row['Left-Fundus'] in existing_files:
+                self.samples.append({
+                    'img': row['Left-Fundus'],
+                    'label': self._get_label(row)
+                })
+            if row['Right-Fundus'] in existing_files:
+                self.samples.append({
+                    'img': row['Right-Fundus'],
+                    'label': self._get_label(row)
+                })
+                
+        print(f"DEBUG: Cleaned dataset! Training on {len(self.samples)} valid images.")
 
     def _get_label(self, row):
-        # Maps the binary columns to a single class index
         labels = [row['N'], row['D'], row['G'], row['C'], row['A'], row['H'], row['M'], row['O']]
-        return labels.index(1) if 1 in labels else 7 # Default to 'Others'
+        return labels.index(1) if 1 in labels else 7
 
     def __len__(self):
         return len(self.samples)
@@ -47,13 +55,8 @@ class ODIRDataset(Dataset):
         sample = self.samples[idx]
         img_path = os.path.join(self.data_dir, sample['img'])
         
-        try:
-            image = Image.open(img_path).convert('RGB')
-        except Exception as e:
-            # STOP the loop and print the exact path it tried to find
-            print(f"CRITICAL ERROR: Cannot find image at {img_path}")
-            print(f"System Error: {e}")
-            raise e # Crash immediately so we can read the log
+        # We don't need a try/except loop anymore because we pre-filtered the files!
+        image = Image.open(img_path).convert('RGB')
 
         if self.transform:
             image = self.transform(image)
