@@ -29,16 +29,19 @@ class ODIRDataset(Dataset):
             existing_files = set()
 
         self.samples = []
-        # 2. Only add the image to our training list if it physically exists in the cloud
+        # 2. Add "_clahe" to the CSV names to match the physical files in Azure
         for _, row in df.iterrows():
-            if row['Left-Fundus'] in existing_files:
+            left_img_name = str(row['Left-Fundus']).replace('.jpg', '_clahe.jpg')
+            right_img_name = str(row['Right-Fundus']).replace('.jpg', '_clahe.jpg')
+
+            if left_img_name in existing_files:
                 self.samples.append({
-                    'img': row['Left-Fundus'],
+                    'img': left_img_name,
                     'label': self._get_label(row)
                 })
-            if row['Right-Fundus'] in existing_files:
+            if right_img_name in existing_files:
                 self.samples.append({
-                    'img': row['Right-Fundus'],
+                    'img': right_img_name,
                     'label': self._get_label(row)
                 })
                 
@@ -55,7 +58,6 @@ class ODIRDataset(Dataset):
         sample = self.samples[idx]
         img_path = os.path.join(self.data_dir, sample['img'])
         
-        # We don't need a try/except loop anymore because we pre-filtered the files!
         image = Image.open(img_path).convert('RGB')
 
         if self.transform:
