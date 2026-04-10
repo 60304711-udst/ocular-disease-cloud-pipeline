@@ -49,11 +49,13 @@ Instructors and Cloud Architects value troubleshooting. This project navigated t
 ## V. Final Results
 
 ### Training Accuracy
-![Training Accuracy Graph]![alt text](image.png)
+Training Accuracy Graph <img width="782" height="520" alt="image" src="https://github.com/user-attachments/assets/84a62d88-e05a-4242-aa5a-7d49ec69c690" />
+
 *The model shows a steady learning curve reaching 74%, indicating a robust feature extraction from the CLAHE-enhanced fundus images.*
 
 ### Live Inference Test
-![JSON Prediction Result](PLACE_SCREENSHOT_LINK_HERE)
+<img width="959" height="443" alt="image" src="https://github.com/user-attachments/assets/ef4cbb36-d896-4715-b3cb-c1aead146b9e" />
+
 *The live endpoint successfully receives image tensors and returns structured JSON predictions, identifying disease classes in real-time.*
 
 ---
